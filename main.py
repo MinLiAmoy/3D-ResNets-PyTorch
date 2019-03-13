@@ -16,11 +16,12 @@ from spatial_transforms import (
 from temporal_transforms import LoopPadding, TemporalRandomCrop
 from target_transforms import ClassLabel, VideoID
 from target_transforms import Compose as TargetCompose
-from dataset import get_training_set, get_validation_set, get_test_set
+from dataset import get_training_set, get_validation_set, get_test_set, get_attack_set
 from utils import Logger
 from train import train_epoch
 from validation import val_epoch
 import test
+import attack
 
 if __name__ == '__main__':
     opt = parse_opts()
@@ -160,3 +161,24 @@ if __name__ == '__main__':
             num_workers=opt.n_threads,
             pin_memory=True)
         test.test(test_loader, model, opt, test_data.class_names)
+
+    if opt.adv_attack:
+        spatial_transform = Compose([
+            Scale(opt.sample_size),
+            CenterCrop(opt.sample_size),
+            ToTensor(opt.norm_value), norm_method
+        ])
+        temporal_transform = LoopPadding(opt.sample_duration)
+        target_transform = ClassLabel()
+        attack_data = get_attack_set(
+            opt, spatial_transform, temporal_transform, target_transform)
+        attack_loader = torch.utils.data.DataLoader(
+            attack_data,
+            batch_size = opt.attack_batch_size,
+            shuffle=False,
+            train=False,
+            num_workers=opt.n_threads,
+            pin_memory=True)
+        attack_logger = Logger(
+            os.path.join(opt.result_path, 'attack.log'), ['epsilon', 'loss', 'acc'])
+        print('launch attack')

@@ -227,7 +227,28 @@ def parse_opts():
         help='ResNeXt cardinality')
     parser.add_argument(
         '--manual_seed', default=1, type=int, help='Manually set random seed')
-
+    parser.add_argument(
+        '--debug', action='store_true', help='If true, only run 1 batch')
+    parser.set_defaults(debug=False)
+    parser.add_argument(
+        '--adv_attack', action='store_true', help='If true, launch the attack')
+    parser.set_defaults(adv_attack=False)
+    parser.add_argument(
+        '--attack_subset',
+        default='val',
+        type=str,
+        help='Used subset in test (val | test)')
+    parser.add_argument(
+        '--n_attack_samples',
+        default=1,
+        type=int,
+        help='Number of attack samples for each activity')
+    parser.add_argument(
+        '--attack_batch_size',
+        default=1,
+        type=int,
+        help='Batch Size when launching attack'
+        )
     args = parser.parse_args()
 
     return args

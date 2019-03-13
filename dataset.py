@@ -144,3 +144,57 @@ def get_test_set(opt, spatial_transform, temporal_transform, target_transform):
             sample_duration=opt.sample_duration)
 
     return test_data
+
+
+def get_attack_set(opt, spatial_transform, temporal_transform,
+                       target_transform):
+    assert opt.dataset in ['kinetics', 'activitynet', 'ucf101', 'hmdb51']
+    assert opt.attack_subset in ['val', 'test']
+
+    if opt.attack_subset == 'val':
+        subset = 'validation'
+    elif opt.attack_subset == 'test':
+        subset = 'testing'
+
+    if opt.dataset == 'kinetics':
+        attack_data = Kinetics(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            opt.n_attack_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'activitynet':
+        attack_data = ActivityNet(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            False,
+            opt.n_attack_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'ucf101':
+        attack_data = UCF101(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            opt.n_attack_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    elif opt.dataset == 'hmdb51':
+        attack_data = HMDB51(
+            opt.video_path,
+            opt.annotation_path,
+            subset,
+            opt.n_attack_samples,
+            spatial_transform,
+            temporal_transform,
+            target_transform,
+            sample_duration=opt.sample_duration)
+    return attack_data
