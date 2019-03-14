@@ -22,6 +22,7 @@ from train import train_epoch
 from validation import val_epoch
 import test
 import attack
+from attacks import fgsm
 
 if __name__ == '__main__':
     opt = parse_opts()
@@ -168,7 +169,7 @@ if __name__ == '__main__':
             CenterCrop(opt.sample_size),
             ToTensor(opt.norm_value), norm_method
         ])
-        temporal_transform = LoopPadding(opt.sample_duration)
+        temporal_transform = TemporalRandomCrop(opt.sample_duration)
         target_transform = ClassLabel()
         attack_data = get_attack_set(
             opt, spatial_transform, temporal_transform, target_transform)
@@ -176,9 +177,10 @@ if __name__ == '__main__':
             attack_data,
             batch_size = opt.attack_batch_size,
             shuffle=False,
-            train=False,
             num_workers=opt.n_threads,
             pin_memory=True)
         attack_logger = Logger(
-            os.path.join(opt.result_path, 'attack.log'), ['epsilon', 'loss', 'acc'])
+            os.path.join(opt.result_path, 'attack.log'), ['loss', 'acc', 'loss_adv', 'acc_adv'])
         print('launch attack')
+        attack.attack(attack_loader, model, criterion, opt, attack_logger)
+        

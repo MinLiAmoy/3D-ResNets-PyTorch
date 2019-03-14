@@ -4,10 +4,10 @@ import time
 import sys
 
 from utils import AverageMeter, calculate_accuracy
+from attacks import fgsm
 
 
-def val_epoch(epoch, data_loader, model, criterion, opt, logger):
-    print('validation at epoch {}'.format(epoch))
+def attack(data_loader, model, criterion, opt, logger):
 
     model.eval()
 
@@ -15,6 +15,10 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
     data_time = AverageMeter()
     losses = AverageMeter()
     accuracies = AverageMeter()
+    losses_adv = AverageMeter()
+    accuracies_adv = AverageMeter()
+
+    epsilons = [0, .05, .1, .15, .2, .25, .3]
 
     end_time = time.time()
     for i, (inputs, targets) in enumerate(data_loader):
@@ -24,29 +28,40 @@ def val_epoch(epoch, data_loader, model, criterion, opt, logger):
             targets = targets.cuda(async=True)
         inputs = Variable(inputs, volatile=True)
         targets = Variable(targets, volatile=True)
+        inputs.requires_grad = True
         outputs = model(inputs)
         loss = criterion(outputs, targets)
         acc = calculate_accuracy(outputs, targets)
 
-        losses.update(loss.data[0], inputs.size(0))
+        losses.update(loss.data.item(), inputs.size(0))
         accuracies.update(acc, inputs.size(0))
+
+        model.zero_grad()
+        loss.backward()
+        inputs_grad = inputs.grad.data
+        inputs_adv = fgsm.attack(inputs, epsilons[6], inputs_grad)
+        outputs = model(inputs_adv)
+        loss = criterion(outputs, targets)
+        acc = calculate_accuracy(outputs, targets)
+
+        losses_adv.update(loss.data.item(), inputs_adv.size(0))
+        accuracies_adv.update(acc, inputs_adv.size(0))
 
         batch_time.update(time.time() - end_time)
         end_time = time.time()
 
-        print('Epoch: [{0}][{1}/{2}]\t'
+        print('Batchs:[{0}/{1}]\t'
               'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
               'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-              'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-              'Acc {acc.val:.3f} ({acc.avg:.3f})'.format(
-                  epoch,
+              'Acc {acc.val:.3f} ({acc.avg:.3f})\t'
+              'Acc_adv {acc_adv.val:.3f} ({acc_adv.avg:.3f})'.format(
                   i + 1,
                   len(data_loader),
                   batch_time=batch_time,
                   data_time=data_time,
-                  loss=losses,
-                  acc=accuracies))
+                  acc=accuracies,
+                  acc_adv=accuracies_adv))
 
-    logger.log({'epoch': epoch, 'loss': losses.avg, 'acc': accuracies.avg})
+    logger.log({'loss': losses.avg, 'acc': accuracies.avg, 'loss_adv': losses_adv.avg,
+                'acc_adv': accuracies_adv.avg})
 
-    return losses.avg
