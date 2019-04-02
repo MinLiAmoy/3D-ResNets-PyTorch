@@ -249,6 +249,16 @@ def parse_opts():
         type=int,
         help='Batch Size when launching attack'
         )
+    parser.add_argument(
+        '--candidate_sel', action='store_true', 
+        help='if True, select the clean data candidate')
+    parser.set_defaults(candidate_sel=False)
+    parser.add_argument(
+        '--number_candidate',
+        default=1000,
+        type=int,
+        help='the number of sampling clean data candidates'
+        )
     args = parser.parse_args()
 
     return args

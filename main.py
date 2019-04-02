@@ -23,6 +23,7 @@ from validation import val_epoch
 import test
 import attack
 from attacks import fgsm
+from select_candidate import candidate_selection
 
 if __name__ == '__main__':
     opt = parse_opts()
@@ -183,4 +184,26 @@ if __name__ == '__main__':
             os.path.join(opt.result_path, 'attack.log'), ['loss', 'acc', 'loss_adv', 'acc_adv'])
         print('launch attack')
         attack.attack(attack_loader, model, criterion, opt, attack_logger)
+
+
+    if opt.candidate_sel:
+        spatial_transform = Compose([
+            Scale(opt.sample_size),
+            CenterCrop(opt.sample_size),
+            ToTensor(opt.norm_value), norm_method
+        ])
+        temporal_transform = TemporalRandomCrop(opt.sample_duration)
+        target_transform = ClassLabel()
+        training_data = get_attack_set(opt, spatial_transform,
+                                         temporal_transform, target_transform)
+        train_loader = torch.utils.data.DataLoader(
+            training_data,
+            batch_size=1,
+            shuffle=True,
+            num_workers=opt.n_threads,
+            pin_memory=True)
+        candidate_selection(train_loader, model, criterion, opt)
+
+
+
         

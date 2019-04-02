@@ -61,6 +61,7 @@ def attack(data_loader, model, criterion, opt, logger):
                   data_time=data_time,
                   acc=accuracies,
                   acc_adv=accuracies_adv))
+    print(accuracies.sum, accuracies.count)
 
     logger.log({'loss': losses.avg, 'acc': accuracies.avg, 'loss_adv': losses_adv.avg,
                 'acc_adv': accuracies_adv.avg})
