@@ -46,7 +46,7 @@ class RFGSMAttack(Attack):
 
         # add randomized single-step attack
         copy_samples = copy_samples + (self.alpha * self.epsilon * np.sign(np.random.randn(*copy_samples.shape)))
-        copy_samples = np.clip(copy_samples, 0.0, 1.0).astype(np.float32)
+        copy_samples = copy_samples.astype(np.float32)
 
         eps = (1.0 - self.alpha) * self.epsilon
         var_samples = tensor2variable(torch.from_numpy(copy_samples), device=device, requires_grad=True)
