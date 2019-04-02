@@ -73,10 +73,10 @@ def candidate_selection(data_loader, model, criterion, opt):
 	candidate_llc = np.array(candidate_llc)
 	candidate_targets = np.array(candidate_targets)
 
-	np.save('ucf_inputs.npy', candidate_images)
-	np.save('ucf_labels.npy', candidate_labels)
-	np.save('ucf_llc.npy', candidate_llc)
-	np.save('ucf_targets.npy', candidate_targets)
+	np.save('UCF_inputs.npy', candidate_images)
+	np.save('UCF_labels.npy', candidate_labels)
+	np.save('UCF_llc.npy', candidate_llc)
+	np.save('UCF_targets.npy', candidate_targets)
 
 
 

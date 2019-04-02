@@ -22,7 +22,7 @@ from train import train_epoch
 from validation import val_epoch
 import test
 import attack
-from attacks import fgsm
+# from attacks import fgsm
 from candidate_select import candidate_selection
 from torch.autograd import Variable
 
