@@ -259,6 +259,11 @@ def parse_opts():
         type=int,
         help='the number of sampling clean data candidates'
         )
+    parser.add_argument(
+        '--testing', action='store_true',
+        help='testing for sample candidates correctivity'
+        )
+    parser.set_defaults(testing=False)
     args = parser.parse_args()
 
     return args

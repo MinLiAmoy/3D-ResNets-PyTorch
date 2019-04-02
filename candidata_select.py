@@ -30,6 +30,7 @@ def candidate_selection(data_loader, model, criterion, opt):
 				successful.append([inputs, targets, least_likly_class])
 	# print(len(successful))
 	print('Start selecting the clean data candidate with number of {}/{}'.format(opt.number_candidate, len(successful)))
+	# torch.save(successful, 'succ.pt')
 
 	candidates = random.sample(successful, opt.number_candidate)
 
@@ -39,11 +40,14 @@ def candidate_selection(data_loader, model, criterion, opt):
 	candidate_targets = []
 
 	for index in range(len(candidates)):
-		image = candidates[index][0].cpu().numpy()	
+		image = candidates[index][0].cpu().numpy()
 		image = np.squeeze(image, axis=0)
 		candidate_images.append(image)
 
 		label = candidates[index][1].cpu().numpy()[0]
+
+		if index == 0:
+			break
 		llc = candidates[index][2].cpu().numpy()[0]
 
 		# selection for the targeted label
