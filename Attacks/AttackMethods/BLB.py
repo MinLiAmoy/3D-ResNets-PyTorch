@@ -79,7 +79,8 @@ class BLBAttack(Attack):
 
             # The steps to be done when doing optimization iteratively.
             def closure():
-                perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
+                # perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
+                perturbed_images = var_samples + r
                 prediction = self.model(perturbed_images)
                 l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
                 constraint_loss = loss_fun(prediction, var_targets)
@@ -91,7 +92,8 @@ class BLBAttack(Attack):
 
             optimizer.step(closure)
 
-            perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
+            # perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
+            perturbed_images = var_samples + r
             prediction = self.model(perturbed_images)
             l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
 

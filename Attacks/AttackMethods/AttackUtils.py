@@ -59,7 +59,7 @@ def predict_batch(model=None, samples=None, ys= None, batch=None, device=None):
     for index in range(number_batch):
         start = index * batch
         end = min((index + 1) * batch, len(samples))
-        print('\r===> predicting adversarial examples in batch {:>2}/{:>4}...'.format(index+1, number_batch))
+        print('\r===> predicting adversarial examples in batch {:>2}/{:>4}...'.format(index+1, number_batch), end=' ')
         copy_samples = np.copy(samples[start:end])
         copy_samples = tensor2variable(torch.from_numpy(copy_samples), device=device)
         predcitions_batch = model(copy_samples.float())

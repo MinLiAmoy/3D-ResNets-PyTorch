@@ -61,7 +61,7 @@ class RFGSMAttack(Attack):
         gradient_sign = var_samples.grad.data.cpu().sign().numpy()
         adv_samples = copy_samples + eps * gradient_sign
 
-        adv_samples = np.clip(adv_samples, 0.0, 1.0)
+        # adv_samples = np.clip(adv_samples, 0.0, 1.0)
         return adv_samples
 
     def batch_perturbation(self, xs, ys, batch_size, device):
