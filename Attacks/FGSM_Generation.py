@@ -77,7 +77,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='The FGSM Attack Generation')
 
     # common arguments
-    parser.add_argument('--dataset', type=str, default='CIFAR10', help='the dataset should be MNIST or CIFAR10')
+    parser.add_argument('--dataset', type=str, default='UCF', help='the dataset should be MNIST or CIFAR10')
     parser.add_argument('--modelDir', type=str, default='../RawModels/', help='the directory for the raw model')
     parser.add_argument('--cleanDir', type=str, default='../CleanDatasets/', help='the directory for the clean dataset that will be attacked')
     parser.add_argument('--adv_saver', type=str, default='../AdversarialExampleDatasets/',

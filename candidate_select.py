@@ -46,8 +46,6 @@ def candidate_selection(data_loader, model, criterion, opt):
 
 		label = candidates[index][1].cpu().numpy()[0]
 
-		if index == 0:
-			break
 		llc = candidates[index][2].cpu().numpy()[0]
 
 		# selection for the targeted label

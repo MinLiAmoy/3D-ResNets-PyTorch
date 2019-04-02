@@ -46,8 +46,11 @@ class Generation(object):
         # else:
         #     self.raw_model = resnet20_cifar().to(device)
         #     self.raw_model.load(path=raw_model_location, device=device)
-        if self.dataset = 'UCF':
+        if self.dataset == 'UCF':
             self.raw_model = resnet.resnet18(num_classes=101, shortcut_type='A', sample_size=112, sample_duration=16)
+            
+            self.raw_model = self.raw_model.cuda()
+            self.raw_model = torch.nn.DataParallel(self.raw_model, device_ids=None)
             self.raw_model.load_state_dict(checkpoint['state_dict'])
 
         # get the clean data sets / true_labels / targets (if the attack is one of the targeted attacks)
