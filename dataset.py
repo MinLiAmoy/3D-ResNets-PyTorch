@@ -3,6 +3,9 @@ from datasets.activitynet import ActivityNet
 from datasets.ucf101 import UCF101
 from datasets.hmdb51 import HMDB51
 
+import torch.utils.data as data
+import numpy as np
+
 
 def get_training_set(opt, spatial_transform, temporal_transform,
                      target_transform):
@@ -198,3 +201,16 @@ def get_attack_set(opt, spatial_transform, temporal_transform,
             target_transform,
             sample_duration=opt.sample_duration)
     return attack_data
+
+class NumpyData(data.Dataset):
+
+    def __init__(self, inputs, labels):
+        self.inputs = inputs
+        self.labels = outputs
+
+    def __getitem__(self, index):
+
+        clip = torch.from_numpy(inputs[index])
+        label = torch.from_numpy(labels[index])
+
+        return clip, label
