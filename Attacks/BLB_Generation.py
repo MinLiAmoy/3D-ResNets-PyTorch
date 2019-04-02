@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 sys.path.append('%s/../' % os.path.dirname(os.path.realpath(__file__)))
-from Attacks.AttackMethods.AttackUtils import predict
+from Attacks.AttackMethods.AttackUtils import predict, predict_batch
 from Attacks.AttackMethods.BLB import BLBAttack
 from Attacks.Generation import Generation
 
