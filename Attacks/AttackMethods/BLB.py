@@ -81,7 +81,7 @@ class BLBAttack(Attack):
             def closure():
                 perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
                 prediction = self.model(perturbed_images)
-                l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3])
+                l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
                 constraint_loss = loss_fun(prediction, var_targets)
                 loss_f = var_const * constraint_loss
                 loss = l2dist.sum() + loss_f.sum()  # minimize c|r| + loss_f(x+r,l), l is the target label, r is the perturbation
@@ -93,7 +93,7 @@ class BLBAttack(Attack):
 
             perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
             prediction = self.model(perturbed_images)
-            l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3])
+            l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
 
             # the following is analogy to CW2 attack
             for i, (dist, score, perturbation) in enumerate(

@@ -67,7 +67,7 @@ class CW2Attack(Attack):
         c_lower_bound = np.zeros(batch_size)
 
         # convert targets to one hot encoder
-        temp_one_hot_matrix = np.eye(10)
+        temp_one_hot_matrix = np.eye(101)
         targets_in_one_hot = []
         for i in range(batch_size):
             current_target = temp_one_hot_matrix[ys_targets[i]]
@@ -97,7 +97,7 @@ class CW2Attack(Attack):
                 perturbed_images = torch.tanh(var_samples + modifier) * half_range + mid_point
                 prediction = self.model(perturbed_images)
 
-                l2dist = torch.sum((perturbed_images - (torch.tanh(var_samples) * half_range + mid_point)) ** 2, [1, 2, 3])
+                l2dist = torch.sum((perturbed_images - (torch.tanh(var_samples) * half_range + mid_point)) ** 2, [1, 2, 3, 4])
 
                 constraint_loss = torch.max((prediction - 1e10 * targets_in_one_hot).max(1)[0] - (prediction * targets_in_one_hot).sum(1),
                                             torch.ones(batch_size, device=device) * self.kappa * -1)
