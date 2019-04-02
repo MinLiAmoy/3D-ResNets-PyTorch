@@ -37,6 +37,7 @@ class FGSMGeneration(Generation):
                                                   device=self.device)
         # prediction for the adversarial examples
         adv_labels = predict_batch(model=self.raw_model, samples=adv_samples, batch=self.attack_batch_size, device=self.device)
+        adv_labels = np.array(adv_labels)
         adv_labels = torch.max(torch.from_numpy(adv_labels), 1)[1]
         adv_labels = adv_labels.cpu().numpy()
 
