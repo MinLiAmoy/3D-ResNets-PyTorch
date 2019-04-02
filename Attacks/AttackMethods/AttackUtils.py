@@ -44,14 +44,19 @@ def predict(model=None, samples=None, device=None):
     return predictions
 
 def predict_batch(model=None, samples=None, batch=None, device=None):
+    model.eval()
+    model = model.to(device)
     predictions = []
     number_batch = int(math.ceil(len(samples) / batch))
     for index in range(number_batch):
         start = index * batch
         end = min((index + 1) * batch, len(samples))
         print('\r===> predicting adversarial examples in batch {:>2}/{:>4}...'.format(index+1, number_batch))
-        predcitions_batch = predict(model, samples[start:end], device).cpu()
-        # predcitions_batch = predcitions_batch.cpu()
+        copy_samples = np.copy(samples[start:end])
+        copy_samples = tensor2variable(torch.from_numpy(copy_samples), device=device)
+        predcitions_batch = model(copy_samples.float())
+        predcitions_batch = predcitions_batch.to('cpu') 
+
         predictions.extend(predcitions_batch)
 
     return predictions
