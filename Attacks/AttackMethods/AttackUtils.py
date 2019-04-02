@@ -14,6 +14,7 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
+import math
 
 def tensor2variable(x=None, device=None, requires_grad=False):
     """
