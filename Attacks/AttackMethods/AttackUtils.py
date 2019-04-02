@@ -50,7 +50,8 @@ def predict_batch(model=None, samples=None, batch=None, device=None):
         start = index * batch
         end = min((index + 1) * batch, len(samples))
         print('\r===> predicting adversarial examples in batch {:>2}/{:>4}...'.format(index+1, number_batch))
-        predcitions_batch = predict(model, samples[start:end], device)
+        predcitions_batch = predict(model, samples[start:end], device).cpu()
+        # predcitions_batch = predcitions_batch.cpu()
         predictions.extend(predcitions_batch)
 
     return predictions
