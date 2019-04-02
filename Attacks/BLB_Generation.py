@@ -40,7 +40,7 @@ class BLBGeneration(Generation):
         adv_samples = attacker.batch_perturbation(xs=self.nature_samples, ys_target=targets, batch_size=self.attack_batch_size,
                                                   device=self.device)
 
-        adv_labels = predict(model=self.raw_model, samples=adv_samples, device=self.device)
+        adv_labels = predict_batch(model=self.raw_model, samples=adv_samples, batch=self.attack_batch_size, device=self.device)
         adv_labels = torch.max(adv_labels, 1)[1]
         adv_labels = adv_labels.cpu().numpy()
 
