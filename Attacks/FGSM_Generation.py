@@ -41,9 +41,9 @@ class FGSMGeneration(Generation):
         adv_labels = torch.max(torch.from_numpy(adv_labels), 1)[1]
         adv_labels = adv_labels.cpu().numpy()
 
-        np.save('{}{}_AdvExamples.npy'.format(self.adv_examples_dir, self.attack_name), adv_samples)
-        np.save('{}{}_AdvLabels.npy'.format(self.adv_examples_dir, self.attack_name), adv_labels)
-        np.save('{}{}_TrueLabels.npy'.format(self.adv_examples_dir, self.attack_name), self.labels_samples)
+        np.save('{}{}_AdvExamples_{}.npy'.format(self.adv_examples_dir, self.attack_name, self.epsilon/255.), adv_samples)
+        np.save('{}{}_AdvLabels_{}.npy'.format(self.adv_examples_dir, self.attack_name, self.epsilon/255.), adv_labels)
+        np.save('{}{}_TrueLabels_{}.npy'.format(self.adv_examples_dir, self.attack_name, self.epsilon/255.), self.labels_samples)
 
         mis = 0
         for i in range(len(adv_samples)):
