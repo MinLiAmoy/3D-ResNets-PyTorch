@@ -121,6 +121,7 @@ class Normalize(object):
         pass
 
 
+
 class Scale(object):
     """Rescale the input PIL.Image to the given size.
     Args:

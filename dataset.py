@@ -214,3 +214,5 @@ class NumpyData(data.Dataset):
         label = torch.from_numpy(labels[index])
 
         return clip, label
+    def __len__(self):
+        return len(self.data)
