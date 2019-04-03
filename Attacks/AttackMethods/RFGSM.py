@@ -41,7 +41,7 @@ class RFGSMAttack(Attack):
         :param device:
         :return:
         """
-
+        mean = np.array([114.7748, 107.7354, 99.4750]).reshape((1, 3, 1, 1, 1))
         copy_samples = np.copy(samples)
 
         # add randomized single-step attack
@@ -61,6 +61,9 @@ class RFGSMAttack(Attack):
         gradient_sign = var_samples.grad.data.cpu().sign().numpy()
         adv_samples = copy_samples + eps * gradient_sign
 
+        adv_samples += mean
+        adv_samples = np.clip(adv_samples, 0.0, 255.0)
+        adv_samples -= mean
         # adv_samples = np.clip(adv_samples, 0.0, 1.0)
         return adv_samples
 

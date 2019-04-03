@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     # arguments for the particular attack
     parser.add_argument('--epsilon', type=float, default=0.1, help='the epsilon value of FGSM')
-    parser.add_argument('--constant', type = float, default=1.0, help='the multipier constant for epsilon')
+    parser.add_argument('--constant', type = float, default=1.0, help='the multipier constant for epsilon, 255.0 or 1.0')
     parser.add_argument('--attack_batch_size', type=int, default=100, help='the default batch size for adversarial example generation')
 
     arguments = parser.parse_args()

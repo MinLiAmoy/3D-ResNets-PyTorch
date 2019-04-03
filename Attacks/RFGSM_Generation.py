@@ -72,7 +72,7 @@ def main(args):
 
     rfgsm = RFGSMGeneration(dataset=args.dataset, attack_name=name, targeted=targeted, raw_model_location=args.modelDir,
                             clean_data_location=args.cleanDir, adv_examples_dir=args.adv_saver, device=device,
-                            eps=args.epsilon, attack_batch_size=args.attack_batch_size, alpha=args.alpha)
+                            eps=args.epsilon*args.constant, attack_batch_size=args.attack_batch_size, alpha=args.alpha)
     rfgsm.generate()
 
 
@@ -91,6 +91,7 @@ if __name__ == '__main__':
     # arguments for the particular attack
     parser.add_argument('--epsilon', type=float, default=0.1, help='the epsilon value of RFGSM')
     parser.add_argument('--alpha', type=float, default=0.5, help='the ratio of alpha related to epsilon in RFGSM ')
+    parser.add_argument('--constant', type = float, default=1.0, help='the multipier constant for epsilon, 255.0 or 1.0')
     parser.add_argument('--attack_batch_size', type=int, default=100, help='the default batch size for adversarial example generation')
 
     arguments = parser.parse_args()
