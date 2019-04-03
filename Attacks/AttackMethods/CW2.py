@@ -54,7 +54,9 @@ class CW2Attack(Attack):
         :return:
         """
         assert len(samples) == batch_size, "the length of sample is not equal to the batch_size"
-
+        mean = np.array([114.7748, 107.7354, 99.4750]).reshape((1, 3, 1, 1, 1))
+        var_mean = tensor2variable(torch.from_numpy(mean), device=device)
+        samples += mean
         # transform the samples [lower, upper] to [-1, 1] and then to the arctanh space
         mid_point = (self.upper_bound + self.lower_bound) * 0.5
         half_range = (self.upper_bound - self.lower_bound) * 0.5
@@ -95,9 +97,11 @@ class CW2Attack(Attack):
             for iteration_times in range(self.max_iterations):
                 # inverse the transform tanh -> [0, 1]
                 perturbed_images = torch.tanh(var_samples + modifier) * half_range + mid_point
+                perturbed_images = torch.clamp(perturbed_images, min=0.0, max=225.0)
+                perturbed_images -= var_mean
                 prediction = self.model(perturbed_images)
 
-                l2dist = torch.sum((perturbed_images - (torch.tanh(var_samples) * half_range + mid_point)) ** 2, [1, 2, 3, 4])
+                l2dist = torch.sum((perturbed_images + var_mean - (torch.tanh(var_samples) * half_range + mid_point)) ** 2, [1, 2, 3, 4])
 
                 constraint_loss = torch.max((prediction - 1e10 * targets_in_one_hot).max(1)[0] - (prediction * targets_in_one_hot).sum(1),
                                             torch.ones(batch_size, device=device) * self.kappa * -1)
