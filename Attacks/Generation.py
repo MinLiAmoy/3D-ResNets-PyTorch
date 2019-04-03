@@ -73,9 +73,9 @@ class Generation(object):
 
         if self.dataset not in os.listdir(adv_examples_dir + self.attack_name + '/'):
             os.mkdir(self.adv_examples_dir)
-        else:
-            shutil.rmtree('{}'.format(self.adv_examples_dir))
-            os.mkdir(self.adv_examples_dir)
+        # else:
+        #     shutil.rmtree('{}'.format(self.adv_examples_dir))
+        #     os.mkdir(self.adv_examples_dir)
 
         # set up device
         self.device = device
