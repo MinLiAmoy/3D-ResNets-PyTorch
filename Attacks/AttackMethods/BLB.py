@@ -44,6 +44,8 @@ class BLBAttack(Attack):
         :return:
         """
         assert len(samples) == batch_size, "the length of sample is not equal to the batch_size"
+        mean = np.array([114.7748, 107.7354, 99.4750]).reshape((1, 3, 1, 1, 1))
+        var_mean = tensor2variable(torch.FloatTensor(mean), device=device)
 
         copy_samples = np.copy(samples)
         var_samples = tensor2variable(torch.from_numpy(copy_samples), device=device)
@@ -81,6 +83,9 @@ class BLBAttack(Attack):
             def closure():
                 # perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
                 perturbed_images = var_samples + r
+                perturbed_images += var_mean
+                perturbed_images = torch.clamp(perturbed_images, min=0.0, max=225.0)
+                perturbed_images -= var_mean
                 prediction = self.model(perturbed_images)
                 l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
                 constraint_loss = loss_fun(prediction, var_targets)
@@ -94,6 +99,9 @@ class BLBAttack(Attack):
 
             # perturbed_images = torch.clamp(var_samples + r, min=0.0, max=1.0)
             perturbed_images = var_samples + r
+            perturbed_images += var_mean
+            perturbed_images = torch.clamp(perturbed_images, min=0.0, max=225.0)
+            perturbed_images -= var_mean
             prediction = self.model(perturbed_images)
             l2dist = torch.sum((perturbed_images - var_samples) ** 2, [1, 2, 3, 4])
 
