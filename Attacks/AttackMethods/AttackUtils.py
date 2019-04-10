@@ -16,7 +16,7 @@ import torch
 from torch.autograd import Variable
 
 import math
-from dataset import NumpyData
+# from dataset import NumpyData
 
 def tensor2variable(x=None, device=None, requires_grad=False):
     """
@@ -49,12 +49,12 @@ def predict_batch(model=None, samples=None, ys= None, batch=None, device=None):
     model.eval()
     model = model.to(device)
     predictions = []
-    numpy_loader = torch.utils.data.DataLoader(
-        NumpyData,
-        batch_size=batch,
-        shuffle=False,
-        pin_memory=True
-        )
+    # numpy_loader = torch.utils.data.DataLoader(
+    #     NumpyData,
+    #     batch_size=batch,
+    #     shuffle=False,
+    #     pin_memory=True
+    #     )
     number_batch = int(math.ceil(len(samples) / batch))
     for index in range(number_batch):
         start = index * batch
