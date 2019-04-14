@@ -33,7 +33,7 @@ def tensor2variable(x=None, device=None, requires_grad=False):
     x = x.to(device)
     return Variable(x, requires_grad=requires_grad)
 
-def perturbation(self, samples, ys, device):
+def perturbation(samples, ys, model, eplison, device):
         """
 
         :param samples:
@@ -42,38 +42,42 @@ def perturbation(self, samples, ys, device):
         :return:
         """
         # ML: add renomalization
-        mean = np.array([114.7748, 107.7354, 99.4750]).reshape((1, 3, 1, 1, 1))
-        copy_samples = np.copy(samples)
+        copy_samples = np.copy(samples)[0]
+        copy_samples = copy_samples.transpose((1, 0, 2, 3))
+
+        mean = np.array([114.7748, 107.7354, 99.4750]).reshape((1, 3, 1, 1))
         # range [0, 1]
         copy_samples += mean
         copy_samples /= 255.
         # nomalization in ImageNet form
-        mean_image = np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1, 1))
-        std_image = np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1, 1))
+        mean_image = np.array([0.485, 0.456, 0.406]).reshape((1, 3, 1, 1))
+        std_image = np.array([0.229, 0.224, 0.225]).reshape((1, 3, 1, 1))
         copy_samples -= mean_image
         copy_samples /= std_image
-
-        for vid in range(len(copy_samples)):
-        	data = copy_samples[vid]
-        	
+        # define loss function
+        loss_fun = torch.nn.CrossEntropyLoss()
 
         var_samples = tensor2variable(torch.from_numpy(copy_samples), device=device, requires_grad=True)
-        var_ys = tensor2variable(torch.LongTensor(ys), device=device)
+        # var_ys = tensor2variable(torch.LongTensor(ys), device=device)
 
-        self.model.eval()
-        preds = self.model(var_samples)
+        model.eval()
+        preds = model(var_samples)
         loss_fun = torch.nn.CrossEntropyLoss()
-        loss = loss_fun(preds, torch.max(var_ys, 1)[1])
+        loss = loss_fun(preds, torch.max(preds, 1)[1])
         loss.backward()
         gradient_sign = var_samples.grad.data.cpu().sign().numpy()
 
-        adv_samples = copy_samples + self.epsilon * gradient_sign
-        adv_samples += mean
+        adv_samples = copy_samples + epsilon * gradient_sign
+        # renomalization of Imagenet format to range [0, 1]
+        adv_samples += mean_image
+        adv_samples *= std_image
+        # to range [0, 255]
+        adv_samples *= 255.
         adv_samples = np.clip(adv_samples, 0.0, 225.0)
         adv_samples -= mean
-        # adv_samples = np.clip(adv_samples, 0.0, 1.0)
+        samples[0] = adv_samples
 
-        return adv_samples
+        return samples
 
 
 if __name__ == '__main__':
@@ -83,23 +87,21 @@ if __name__ == '__main__':
 	parser.add_argument(
 		'--label_path', default='UCF_labels.npy', type=str, help='the path for clean eamamples labels')
 	parser.add_argument(
-		'--sample_rate', default=4, type=int, help='the sample_rate for adv examples, eg. 4-sample once for every 4 frames')
+		'--epsilon', default=0.1, type=float, help='the attack strength of FGSM')
 
+    args = parser.parser_args()
 	# load the pretrained model from torchvision
 	resnet18 = models.resnet18(pretrained=True).cuda()
 
 	# load clean examples
-	clean_stack = np.load(clean_path)
-	labels = np.load(label_path)
+	clean_stack = np.load(args.clean_path)
+	labels = np.load(args.label_path)
 
 	adv_sample = []
-    number_batch = int(math.ceil(len(clean_stack) / batch_size))
-    for index in range(number_batch):
-        start = index * batch_size
-        end = min((index + 1) * batch_size, len(clean_stack))
-        print('\r===> in batch {:>2}, {:>4} ({:>4} in total) nature examples are perturbed ... '.format(index, end - start, end), end=' ')
+    for vid in range(len(clean_stack)):
+        print('\r===> in idx {:>4}({:>4} in total) videos are perturbed ... '.format(vid, len(clean_stack)), end=' ')
 
-        batch_adv_images = perturbation(clean_stack[start:end], labels[start:end], 'cuda')
+        batch_adv_images = perturbation(clean_stack[vid:vid+1], labels[vid:vid+1], resnet18, args.epsilon, 'cuda')
         adv_sample.extend(batch_adv_images)
 
     adv_sample = np.array(adv_sample)
