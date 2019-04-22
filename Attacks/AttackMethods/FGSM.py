@@ -52,7 +52,7 @@ class FGSMAttack(Attack):
 
         adv_samples = copy_samples + self.epsilon * gradient_sign
         adv_samples += mean
-        adv_samples = np.clip(adv_samples, 0.0, 225.0)
+        adv_samples = np.clip(adv_samples, 0.0, 255.0)
         adv_samples -= mean
         # adv_samples = np.clip(adv_samples, 0.0, 1.0)
 
